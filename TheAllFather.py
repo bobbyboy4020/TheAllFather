@@ -216,7 +216,7 @@ def FreshReporting(jobCodes):
 			frbApp[2].close()
 		except:
 			pass
-		popup("frb done")
+		popup("FRB has completed.")
 	FreshReportMulti(jobCodes)
 
 def Retaking(jobCodes):
@@ -338,8 +338,9 @@ def Retaking(jobCodes):
 		paste(jobLoc)
 		sleep(0.2)
 		type(Key.ENTER)
-		sleep(0.2)
+		sleep(0.5)
 		type('a', KeyModifier.CTRL)
+		sleep(0.5)
 		paste(codes[0] + "-" + codes[1] + "-" + codes[2] + " Subjects Not Photographed - Alpha.pdf")
 		sleep(0.5)
 		type(Key.ENTER)
@@ -467,7 +468,7 @@ def Retaking(jobCodes):
 				pass
 
 
-		popup("all done :^)")
+		popup("retakes all done :^)")
 		eeApp[0].close()
 		try:
 			eeApp[1].close()
@@ -768,7 +769,7 @@ def Originaling(jobCodes):
 			ccardOK = popAsk("Camera Cards OK? USB plugged in?") #does job need cards printed and exe to usb?
 			if(ccardOK):
 				PrintCards(codes)
-			popup("all done :^)")
+			popup("originals all done :^)")
 	OriginalJobs(jobCodes)
 
 jobCodes = CopyJobCodes()
