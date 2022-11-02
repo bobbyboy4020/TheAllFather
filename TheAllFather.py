@@ -109,7 +109,7 @@ def FreshReporting(jobCodes):
 				break
 			else:
 				pass
-		sleep(2)
+		sleep(3)
 		type(Key.ENTER)
 		while True:
 			if(frbReg.exists(Pattern("FRBmagniGlass.png").similar(0.86))):
@@ -775,10 +775,12 @@ def Originaling(jobCodes):
 jobCodes = CopyJobCodes()
 
 while not choice == "4":
-	choice = input("Enter Job Type: \n1 for Reports\n2 for Retakes\n3 for 0 Jobs\n4 to exit")
+	choice = input("Enter Job Type: \n1 for Reports\n2 for Retakes\n3 for 0 Jobs\n4 to exit\n5 to get new jobcodes")
 	if(choice == "1"):
 		FreshReporting(jobCodes)
 	elif(choice == "2"):
 		Retaking(jobCodes)
 	elif(choice == "3"):
 		Originaling(jobCodes)
+	elif(choice == "5"):
+		jobCodes = CopyJobCodes()
