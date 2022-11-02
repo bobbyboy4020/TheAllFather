@@ -12,6 +12,7 @@ def CopyClip():
 	return Env.getClipboard() #copies clipboard to return
 def CopyJobCodes():
 	#grabs assigned jobs from Tracking
+	jobCodes = []
 	clicker = Screen(1).find(Pattern("JobsCheck.png").similar(0.65).targetOffset(-82,72)) #Location on second monitor to click 3 times to select all jobs in current query 
 	click(clicker)
 	click(clicker)
