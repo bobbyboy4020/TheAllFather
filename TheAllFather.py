@@ -2,12 +2,11 @@
 from datetime import date
 setAutoWaitTimeout(20)    #give program time to wait for the slow report program
 Settings.MoveMouseDelay = 0.0   #mouse instant movement
-reportSaveLoc = r"C:\Users\hkarn\Documents\PDF\FreshReports\Nov 1 - Nov 18"
+reportSaveLoc = r"C:\Users\hkarn\Documents\PDF\FreshReports\Nov 21 - Dec 23"
 jobCodes = []
 choice = ""
 sortArray = []
 frbDone = False
-
 
 def CopyClip():
 	type('c', KeyModifier.CTRL)
@@ -16,7 +15,7 @@ def CopyClip():
 def CopyJobCodes():
 	#grabs assigned jobs from Tracking
 	jobCodes = []
-	clicker = Screen(1).find(Pattern("JobsCheck.png").similar(0.65).targetOffset(-82,72)) #Location on second monitor to click 3 times to select all jobs in current query 
+	clicker = Screen(1).find(Pattern("JobsCheck.png").similar(0.60).targetOffset(-82,72)) #Location on second monitor to click 3 times to select all jobs in current query 
 	click(clicker)
 	click(clicker)
 	click(clicker)
