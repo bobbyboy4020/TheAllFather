@@ -2,9 +2,11 @@
 from datetime import date
 setAutoWaitTimeout(20)    #give program time to wait for the slow report program
 Settings.MoveMouseDelay = 0.0   #mouse instant movement
-reportSaveLoc = r"C:\Users\hkarn\Documents\PDF\FreshReports\Nov 1 - Nov 18"
+reportSaveLoc = r"C:\Users\hkarn\Documents\PDF\FreshReports\Nov 21 - Dec 23"
 jobCodes = []
 choice = ""
+sortArray = []
+frbDone = False
 
 def CopyClip():
 	type('c', KeyModifier.CTRL)
@@ -13,7 +15,7 @@ def CopyClip():
 def CopyJobCodes():
 	#grabs assigned jobs from Tracking
 	jobCodes = []
-	clicker = Screen(1).find(Pattern("JobsCheck.png").similar(0.65).targetOffset(-82,72)) #Location on second monitor to click 3 times to select all jobs in current query 
+	clicker = Screen(1).find(Pattern("JobsCheck.png").similar(0.60).targetOffset(-82,72)) #Location on second monitor to click 3 times to select all jobs in current query 
 	click(clicker)
 	click(clicker)
 	click(clicker)
@@ -165,6 +167,11 @@ def FreshReporting(jobCodes):
 			frbReg.click("HPC0printer.png")
 		frbReg.click(Pattern("Printallpage.png").targetOffset(-9,21))
 		sleep(2)
+
+		Screen(1).doubleClick(Pattern("HomeroomSpot.png").similar(0.65).targetOffset(0,-15))
+		sort = CopyClip()
+		sortArray.append(sort[0])
+		
 	def FreshReportMulti(jobCodes): #to print multiple reports at the same time
 		frbApp = []
 		first = True
@@ -284,29 +291,49 @@ def Retaking(jobCodes):
 		eeReg.click(Pattern("EXE-SecondCheck.png").targetOffset(22,68))#clicks ok
 		sleep(0.5)
 		eeReg.click("FindSubjectEE.png")
+		while True:
+			if(eeReg.exists("ImageLoadedEE.png")):
+				break
+			else:
+				eeReg.click("FindSubjectEE.png")
 		sleep(0.1)
 		eeReg.click(Pattern("ImageLoadedEE.png").targetOffset(24,6))
 		sleep(0.1)
 		eeReg.click("FindSubjectButton.png")
 		sleep(0.5)
-		eeReg.click("SortButtonEE.png")         #sort job before exe making
-		eeReg.wait("SortingSquare.png")
-		sleep(0.1)
-		if ("h" in sortType):
-			eeReg.click("SortingSquare.png")
-		elif ("g" in sortType):
-			eeReg.click(Pattern("SortingSquare.png").targetOffset(0,-31))
-		elif ("a" in sortType):
-			eeReg.click(Pattern("SortingSquare.png").targetOffset(0,31))
+		eeReg.click("SortButtonEE.png")
+		while True:
+			if(eeReg.exists("quickSort.png")):
+				break
+			else:
+				eeReg.click("SortButtonEE.png")
+				sleep(0.2)
+		sleep(0.2)
+		if not (sortType == ""):
+			sortType = sortType[0]
+			sortType.lower()
+		if ('h' in sortType):
+			eeReg.click("quickSort.png")
+		elif ('g' in sortType):
+			eeReg.click(Pattern("quickSort.png").targetOffset(0,-27))
+		elif ('a' in sortType):
+			eeReg.click(Pattern("quickSort.png").targetOffset(0,35))
 		else:
-			if(codes[1]=="E231"):
-				eeReg.click("SortingSquare.png")
-			elif(codes[1]=="H231"):
-				eeReg.click(Pattern("SortingSquare.png").targetOffset(0,-32))
-			elif(codes[1]=="E232"):
-				eeReg.click("SortingSquare.png")
+			if(codes[1] == "E231"):
+				eeReg.click("quickSort.png")
+			elif(codes[1] == "H231"):
+				eeReg.click(Pattern("quickSort.png").targetOffset(0,-27))
+			elif(codes[1] == "E232"):
+				eeReg.click("quickSort.png")
+			elif(codes[1] == "H232"):
+				eeReg.click(Pattern("quickSort.png").targetOffset(0,-27))
 		sleep(0.5)
 		eeReg.click("ReportsPage1.png")
+		while True:
+			if(eeReg.exists("ReportsName.png")):
+				break
+			else:
+				eeReg.click("ReportsPage1.png")
 		sleep(0.25)
 		eeReg.click(Pattern("ReportsName.png").targetOffset(154,39))
 		sleep(0.2)
@@ -349,7 +376,7 @@ def Retaking(jobCodes):
 		regon = Region(0,0,150,150)
 		setAutoWaitTimeout(10)
 		try:
-			regon.wait("ADOBEprintCCards.png")#Wait for the camera cards to start printing
+			regon.wait("ADOBEprintCCards.png")			#Wait for the camera cards to start printing
 			while regon.exists("ADOBEprintCCards.png"): #while printing exists, stay printing
 				sleep(1)
 		except:
@@ -365,7 +392,6 @@ def Retaking(jobCodes):
 		#we run through the exe maker 3 times first after that, 
 		#go to the first job started and wait for the confirmation window either do cards for job that finished exe, 
 		#or wait for other 2 to finish so no popups mess with the run
-		
 		eeApp = [] #array for Edge Entry Apps
 		codes = [] #array for split job codes
 		apps = ""
@@ -398,19 +424,27 @@ def Retaking(jobCodes):
 			exeGood = ""
 			try:
 				exeMake = popAsk("Make exes? " + str(jobCodes[i]) + ", " + str(jobCodes[i+1]) + ", " + str(jobCodes[i+2]))
-				sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n" + str(jobCodes[i]) + ", " + str(jobCodes[i+1]) + ", " + str(jobCodes[i+2]))
+				if not frbDone:		
+					sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n" + str(jobCodes[i]) + ", " + str(jobCodes[i+1]) + ", " + str(jobCodes[i+2]))
+					sorts = sorts.split(",") #h for homeroom, g for grade, a for alpha
 			except:
 				try:
 					exeMake = popAsk("Make exes? " + str(jobCodes[i]) + ", " + str(jobCodes[i+1]))
-					sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n" + str(jobCodes[i]) + ", " + str(jobCodes[i+1]))
+					if not frbDone:
+						sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n" + str(jobCodes[i]) + ", " + str(jobCodes[i+1]))
+						sorts = sorts.split(",") #h for homeroom, g for grade, a for alpha
 				except:
 					try:
 						exeMake = popAsk("Make exes? " + str(jobCodes[i]))
-						sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n" + str(jobCodes[i]))
+						if not frbDone:
+							sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n" + str(jobCodes[i]))
+							sorts = sorts.split(",") #h for homeroom, g for grade, a for alpha
 					except:
 						exeMake = popAsk("Make exes?")
-						sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n")
-			sorts = sorts.split(",") #h for homeroom, g for grade, a for alpha
+						if not frbDone:
+							sorts = input("sorts for jobs? split by comma, enter nothing if all are default\nh for homeroom, g for grade, a for alpha\n")
+							sorts = sorts.split(",") #h for homeroom, g for grade, a for alpha
+			
 			if(exeMake):
 				CreateJobRetake(codes[i], eeApp[0], eeReg)
 				MakeExe(codes[i], eeApp[0])
@@ -434,16 +468,25 @@ def Retaking(jobCodes):
 			#goto job 1 and wait for confirmation window
 			exeGood = popAsk("Exe made?")
 			if(exeGood):
-				SaveCardsRetake(codes[i], eeApp[0], True, eeReg, sorts[0])
+				if(frbDone): #if reports have been built, will have sort, wont have to ask user
+					SaveCardsRetake(codes[i], eeApp[0], True, eeReg, sortArray[i])
+				else:
+					SaveCardsRetake(codes[i], eeApp[0], True, eeReg, sorts[0])
 				try:
-					SaveCardsRetake(codes[i+1], eeApp[1], False, eeReg, sorts[1])
+					if(frbDone):
+						SaveCardsRetake(codes[i+1], eeApp[1], False, eeReg, sortArray[i+1])
+					else:
+						SaveCardsRetake(codes[i+1], eeApp[1], False, eeReg, sorts[1])
 				except:
 					try:
 						SaveCardsRetake(codes[i+1], eeApp[1], False, eeReg, "")
 					except:
 						pass
 				try:
-					SaveCardsRetake(codes[i+2], eeApp[2], False, eeReg, sorts[2])
+					if(frbDone):
+						SaveCardsRetake(codes[i+2], eeApp[2], False, eeReg, sortArray[i+2])
+					else:
+						SaveCardsRetake(codes[i+2], eeApp[2], False, eeReg, sorts[2])
 				except:
 					try:
 						SaveCardsRetake(codes[i+2], eeApp[2], False, eeReg, "")
@@ -774,14 +817,12 @@ def Originaling(jobCodes):
 	OriginalJobs(jobCodes)
 
 jobCodes = CopyJobCodes()
-
-while not choice == "4":
-	choice = input("Enter Job Type: \n1 for Reports\n2 for Retakes\n3 for 0 Jobs\n4 to exit\n5 to get new jobcodes")
+while not (choice == "4"):
+	choice = input("Enter Job Type: \n1 for Reports\n2 for Retakes\n3 for 0 Jobs\n4 to exit")
 	if(choice == "1"):
 		FreshReporting(jobCodes)
+		frbDone = True
 	elif(choice == "2"):
 		Retaking(jobCodes)
 	elif(choice == "3"):
 		Originaling(jobCodes)
-	elif(choice == "5"):
-		jobCodes = CopyJobCodes()
